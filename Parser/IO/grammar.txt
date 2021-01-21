@@ -1,0 +1,23 @@
+E
+    : T A
+    ;
+
+A
+    : ADD T A
+    | epsilon
+    ;
+
+T
+    : F M
+    ;
+
+M
+    : MUL F M
+    | epsilon
+    ;
+
+F
+    : NUM
+    | LPAREN E RPAREN
+    | LBRACKET E RBRACKET
+    ;
