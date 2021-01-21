@@ -8,21 +8,21 @@ public class Main {
         FileWriter fileWriter = new FileWriter("Parser/IO/output.txt");
         String line;
         Scanner sc = new Scanner();
-        String output = "";
+        StringBuilder output = new StringBuilder();
         Parser parser = new Parser();
         parser.createRules();
         while((line = bufferedReader.readLine()) != null){
             ArrayList<Token> tokens = sc.process(line);
+            output.append(line);
             for(Token token: tokens){
-                output += token + " ";
+                //output.append(token).append(" ");
             }
             String result = parser.parse(line);
-            System.out.println(line + " - REJECT. Offending token '"+ result +"'");
-            output += "\n";
+            output.append("\n");
         }
-        output = output.trim();
+        output = new StringBuilder(output.toString().trim());
         System.out.println(output);
-        fileWriter.write(output);
+        fileWriter.write(output.toString());
         inputStream.close();
         fileWriter.close();
     }

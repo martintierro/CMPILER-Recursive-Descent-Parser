@@ -30,8 +30,6 @@ public class Parser {
                 }
             }
             this.rules.put(LHS, r);
-            System.out.println(r.getLHS());
-            System.out.println(r.getRHS());
         }
 
     }
