@@ -40,10 +40,9 @@ public class Parser {
 
     public String parse(ArrayList<Token> tokens){
         this.stack.clear();
-        this.stack.push("E");
-        String result = "FALSE";
+        this.stack.push("E"); //push starting symbol
         int token_pointer = 0;
-        boolean noRule = true;
+//        boolean noRule = true;
         int rule_index = 0;
         Rule curr_rule = null;
 
@@ -69,6 +68,7 @@ public class Parser {
                 rule_index = 0;
             } else{
                 Rule rule = rules.get(this.stack.peek());
+                System.out.println(this.stack.peek() + rule);
                 if(rule != null){
                     curr_rule = rule;
                     ArrayList<String> RHS = curr_rule.getRHS();
@@ -77,6 +77,10 @@ public class Parser {
                     else if(currentToken != null)
                         return " - REJECT. Offending token '" + currentToken.getLexeme() +"'";
                     else return " - REJECT. Offending token '" + tokens.get(token_pointer-1).getLexeme()+"'";
+                } else if(this.stack.peek().equals("RPAREN")){
+                    return " - REJECT. Offending token '('";
+                } else if(this.stack.peek().equals("RBRACKET")) {
+                    return " - REJECT. Offending token '['";
                 } else{
                     rule_index++;
                     performBacktrack(curr_rule);
@@ -85,18 +89,14 @@ public class Parser {
             }
 
             if(token_pointer == tokens.size() && stack.isEmpty()){
-                noRule = false;
+//                noRule = false;
+                return " - ACCEPT";
             }
 
             System.out.println("Stack: " + stack);
         }
 
-        if(!noRule){
-            return " - ACCEPT";
-        } else{
-            System.out.println("ERROR: No proper derivation for input!");
-            return " - REJECT";
-        }
+        return " - REJECT. Offending token '" + tokens.get(token_pointer).getLexeme() +"'";
 
     }
 
