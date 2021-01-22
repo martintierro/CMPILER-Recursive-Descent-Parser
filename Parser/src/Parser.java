@@ -2,8 +2,10 @@ import java.io.*;
 import java.util.*;
 
 public class Parser {
-    HashMap<String, Rule> rules = new HashMap<>();
-    Stack<String> stack = new Stack<>();
+    private LinkedHashMap<String, Rule> rules = new LinkedHashMap<>();
+    private Stack<String> stack = new Stack<>();
+    private Stack<String> temp_stack = new Stack<>();
+    private String first = "";
 
     public void createRules() throws IOException {
         InputStream inputStream = new FileInputStream("Parser/IO/grammar.txt");
@@ -16,6 +18,7 @@ public class Parser {
         }
 
         String[] rules = grammar.toString().split(";");
+
         for (String rule: rules) {
             rule = rule.trim();
             String[] temp = rule.split(":");
@@ -35,42 +38,94 @@ public class Parser {
     }
 
 
-    public String parse(String input){
+    public String parse(ArrayList<Token> tokens){
+        this.stack.clear();
         this.stack.push("E");
+        String result = "FALSE";
+        int token_pointer = 0;
+        boolean noRule = true;
+        int rule_index = 0;
+        Rule curr_rule = null;
 
-        int pointer = 0;
-        boolean noRule = false;
+        while(!stack.isEmpty()){
+            Token currentToken = null;
 
-        if(noRule){
-            System.out.println("ERROR: No proper derivation for input!");
+            if(token_pointer < tokens.size())
+                currentToken = tokens.get(token_pointer);
+
+            if(currentToken != null && currentToken.getTokenType().equals("ERROR")){
+                return " - REJECT. Offending token '" + currentToken.getLexeme() +"'";
+            }
+            else if(currentToken != null && this.stack.peek().equals(currentToken.getTokenType())) {
+                token_pointer++;
+                System.out.println("MATCH: " + this.stack.pop());
+                rule_index = 0;
+                if(!temp_stack.isEmpty()){
+                    temp_stack.pop();
+                }
+            } else if (stack.peek().equals("")) {
+                System.out.println("EPSILON");
+                stack.pop();
+                rule_index = 0;
+            } else{
+                Rule rule = rules.get(this.stack.peek());
+                if(rule != null){
+                    curr_rule = rule;
+                    ArrayList<String> RHS = curr_rule.getRHS();
+                    if(rule_index < RHS.size())
+                        expand(RHS.get(rule_index));
+                    else if(currentToken != null)
+                        return " - REJECT. Offending token '" + currentToken.getLexeme() +"'";
+                    else return " - REJECT. Offending token '" + tokens.get(token_pointer-1).getLexeme()+"'";
+                } else{
+                    rule_index++;
+                    performBacktrack(curr_rule);
+                }
+
+            }
+
+            if(token_pointer == tokens.size() && stack.isEmpty()){
+                noRule = false;
+            }
+
+            System.out.println("Stack: " + stack);
         }
 
-        return "";
+        if(!noRule){
+            return " - ACCEPT";
+        } else{
+            System.out.println("ERROR: No proper derivation for input!");
+            return " - REJECT";
+        }
+
     }
 
     public void expand(String production){
         if(stack.isEmpty()){
             return;
         }
-
-        stack.pop();
-        String[] temp = production.split("");
+        this.temp_stack.clear();
+        System.out.println("EXPAND: " + stack.pop());
+        String[] temp = production.split(" ");
         for(int i = temp.length-1; i >= 0; i--){
             this.stack.push(temp[i]);
+            this.temp_stack.push(temp[i]);
         }
 
     }
 
-    public void performBacktrack(String production){
+    public void performBacktrack(Rule currentRule){
         if(stack.isEmpty()){
             return;
         }
 
-        stack.pop();
-        String LHS = "a";
+        while(!temp_stack.isEmpty()){
+            stack.pop();
+            temp_stack.pop();
+        }
+        String LHS = currentRule.getLHS();
+        System.out.println("Backtrack - adding: " + LHS);
         stack.push(LHS);
     }
-
-
 
 }

@@ -23,8 +23,8 @@ public class Token {
         MUL,
     }
 
-    public TokenType tokenType;
-    public String lexeme;
+    private TokenType tokenType;
+    private String lexeme;
 
     public Token(String word){
         this.tokenType = identifyToken(word);
@@ -104,6 +104,14 @@ public class Token {
             }
             default: return dead;
         }
+    }
+
+    public String getTokenType() {
+        return tokenType.toString();
+    }
+
+    public String getLexeme() {
+        return lexeme;
     }
 
     @Override
