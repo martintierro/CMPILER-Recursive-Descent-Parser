@@ -42,12 +42,12 @@ public class Parser {
         this.stack.clear();
         this.stack.push("E"); //push starting symbol
         int token_pointer = 0;
-//        boolean noRule = true;
         int rule_index = 0;
         Rule curr_rule = null;
 
         while(!stack.isEmpty()){
             Token currentToken = null;
+            boolean isToken = Token.checkIfToken(this.stack.peek());
 
             if(token_pointer < tokens.size())
                 currentToken = tokens.get(token_pointer);
@@ -55,7 +55,7 @@ public class Parser {
             if(currentToken != null && currentToken.getTokenType().equals("ERROR")){
                 return " - REJECT. Offending token '" + currentToken.getLexeme() +"'";
             }
-            else if(currentToken != null && this.stack.peek().equals(currentToken.getTokenType())) {
+            else if(isToken && currentToken != null && this.stack.peek().equals(currentToken.getTokenType())) {
                 token_pointer++;
                 System.out.println("MATCH: " + this.stack.pop());
                 rule_index = 0;
@@ -67,10 +67,8 @@ public class Parser {
                 stack.pop();
                 rule_index = 0;
             } else{
-                Rule rule = rules.get(this.stack.peek());
-                System.out.println(this.stack.peek() + rule);
-                if(rule != null){
-                    curr_rule = rule;
+                if(!isToken){
+                    curr_rule = rules.get(this.stack.peek());
                     ArrayList<String> RHS = curr_rule.getRHS();
                     if(rule_index < RHS.size())
                         expand(RHS.get(rule_index));

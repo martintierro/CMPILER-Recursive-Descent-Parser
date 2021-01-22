@@ -31,6 +31,15 @@ public class Token {
         this.lexeme = word;
     }
 
+
+    public static boolean checkIfToken(String str){
+        for (TokenType type: TokenType.values()) {
+            if(type.toString().equals(str))
+                return true;
+        }
+        return false;
+    }
+
     public static void initialize() {
         state = s0;
     }

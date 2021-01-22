@@ -11,10 +11,7 @@ public class Main {
         StringBuilder output = new StringBuilder();
         Parser ps = new Parser();
         ps.createRules();
-//        line = bufferedReader.readLine();
-//        ArrayList<Token> tokens = sc.process(line);
-//        String result = ps.parse(tokens);
-//        System.out.println(result);
+
         while((line = bufferedReader.readLine()) != null){
             ArrayList<Token> tokens = sc.process(line);
             output.append(line);

@@ -8,12 +8,11 @@ public class Scanner {
         for (String l: temp){
             char[] tempchar = l.toCharArray();
             StringBuilder wordbuilder = new StringBuilder();
-            //String tempword = "";
             for (char c: tempchar) {
                 if( c == '+' || c == '*' ||
                     c == '[' || c == ']' ||
                     c == '(' || c == ')'){
-                    if(!wordbuilder.toString().equals("")){ // wordtemo
+                    if(!wordbuilder.toString().equals("")){
                         words.add(wordbuilder.toString());
                     }
                     wordbuilder = new StringBuilder(String.valueOf(c));
